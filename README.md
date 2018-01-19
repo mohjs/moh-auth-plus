@@ -6,7 +6,7 @@ The auth plus lib to make auth with role, oauth, custome auth easily and reuseab
 
 User should inject the following methhod to make functions works.
 
-### Inject methods
+### Inject base methods
 
 * A1 basicAuth: return valied user with `account` and `password` info. `(account, password) => Promise.resolve(user)`
 
