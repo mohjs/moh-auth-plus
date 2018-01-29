@@ -36,8 +36,6 @@ test.before(t => {
 
             if (!authPlus.base.isVerified(password, user.salt, user.hashedPassword)) throw new Error('Invalid Username or Password!')
 
-            console.log('>>> passed')
-
             return user
           })
         },
@@ -70,18 +68,24 @@ test.before(t => {
           }).then(token => {
             if (!token) throw new Error('Failed to create token.')
 
+            const refreshExpire = DateTime.fromISO(token.refreshTokenExpiresAt.toISOString());
+            const tokenExpire = DateTime.fromISO(token.accessTokenExpiresAt.toISOString());
+            const now = DateTime.local();
+
+            const seconds = tokenExpire.diff(now, 'seconds')
+
             return {
               accessToken: token.accessToken,
-              accessTokenExpiresAt: (new Date(token.accessTokenExpiresAt)).getMilliseconds() - (new Date()).getMilliseconds(),
+              accessTokenExpiresAt: Math.round(tokenExpire.diff(now, 'seconds').seconds),
               refreshToken: token.refreshToken,
-              refreshTokenExpiresAt: (new Date(token.refreshTokenExpiresAt)).getMilliseconds() - (new Date()).getMilliseconds()
+              refreshTokenExpiresAt: Math.round(refreshExpire.diff(now, 'seconds').seconds)
             }
           })
         },
         authByToken: (token) => {
           return mongoose.models.AccessToken.findOne({
             accessToken: token
-          }).then(toke  => {
+          }).then(token  => {
             if (!token) throw new Error('Invalid AccessToken!')
 
             if (new Date(token.accessTokenExpiresAt) < new Date()) throw new Error('Token has expired, please refresh')
@@ -92,28 +96,30 @@ test.before(t => {
         refreshToken: (refreshToken) => {
           return mongoose.models.AccessToken.findOne({
             refreshToken: refreshToken
-          }).then(toke  => {
+          }).then(token  => {
             if (!token) throw new Error('Invalid RefreshToken!')
 
             if (new Date(token.refreshTokenExpiresAt) < new Date()) throw new Error('RefreshToken has expired.')
-
-
 
             return mongoose.models.AccessToken.create({
             accessToken: uuidv4(),
             accessTokenExpiresAt: DateTime.local().plus({day: 1}),
             refreshToken: uuidv4(),
             refreshTokenExpiresAt: DateTime.local().plus({day: 3}),
-            user: toke.user,
-            info: toke.info
+            user: token.user,
+            info: token.info
           }).then(token => {
             if (!token) throw new Error('Failed to create token.')
 
+            const refreshExpire = DateTime.fromISO(token.refreshTokenExpiresAt.toISOString());
+            const tokenExpire = DateTime.fromISO(token.accessTokenExpiresAt.toISOString());
+            const now = DateTime.local();
+
             return {
               accessToken: token.accessToken,
-              accessTokenExpiresAt: (new Date(token.accessTokenExpiresAt)).getMilliseconds() - (new Date()).getMilliseconds(),
+              accessTokenExpiresAt: Math.round(tokenExpire.diff(now, 'seconds').seconds),
               refreshToken: token.refreshToken,
-              refreshTokenExpiresAt: (new Date(token.refreshTokenExpiresAt)).getMilliseconds() - (new Date()).getMilliseconds()
+              refreshTokenExpiresAt: Math.round(refreshExpire.diff(now, 'seconds').seconds)
             }
           })
           })
@@ -122,14 +128,18 @@ test.before(t => {
           return mongoose.models.AccessToken.deleteOne({
             accessToken: token
           }).then(result => {
-            return true
+            return {
+              success: true
+            }
           })
         },
         customRevokeToken: (username) => {
           return mongoose.models.AccessToken.deleteOne({
             'user.username': username
           }).then(result => {
-            return true
+            return {
+              success: true
+            }
           })
         }
       })
@@ -137,7 +147,7 @@ test.before(t => {
     .catch(err => console.log)
 })
 
-test.serially('should can basic login', async t => {
+test.serial('should can basic login', async t => {
   t.plan(4)
   
   const token = await authPlus.basicLogin('ole3021', 'test1234')
@@ -168,10 +178,10 @@ test('should can custom login', async t => {
   t.truthy(token.refreshTokenExpiresAt)
 })
 
-test('should auth with token', async t => {
+test.serial('should auth with token', async t => {
   t.plan(4)
 
-  const token = await authPlus.auth(currentToken.accessToken)
+  const token = await authPlus.authenticate(currentToken.accessToken)
 
   t.truthy(token.accessToken)
   t.truthy(token.accessTokenExpiresAt)
@@ -180,22 +190,49 @@ test('should auth with token', async t => {
 })
 
 test('should fail to auth with wrong token', async t => {
-  const token = await authPlus.auth('fakeToken')
+  try {
+    const token = await authPlus.authenticate('fakeToken')
+  } catch (error) {
+    t.plan(1)
+
+    t.is(error.message, 'Invalid AccessToken!');
+  }
 })
 
 test('should refresh token with refreshToken', async t => {
+  t.plan(4)
 
+  const token = await authPlus.refreshToken('refreshToken')
+
+  t.truthy(token.accessToken)
+  t.truthy(token.accessTokenExpiresAt)
+  t.truthy(token.refreshToken)
+  t.truthy(token.refreshTokenExpiresAt)
 })
 
 test('should fail to refresh token with worng refreshToken', async t => {
+  try {
+    const token = await authPlus.refreshToken('fakeToken')
+  } catch (error) {
+    t.plan(1)
 
+    t.is(error.message, 'Invalid RefreshToken!');
+  }
 })
 
 test('should can log out', async t => {
+  t.plan(1)
 
+  const result = await authPlus.logout(currentToken.accessToken)
+
+  t.is(result.success, true)
 })
 
 test('should can force log out a user', async t => {
+  t.plan(1)
 
+  const result = await authPlus.forceLogout('ole3022')
+
+  t.is(result.success, true);
 })
 
