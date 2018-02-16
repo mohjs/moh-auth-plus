@@ -25,10 +25,15 @@ authPlus = AuthPlus({
 2. Call the authPlus to handle auth logic
 
 `const token = await authPlus.basicLogin('ole3021', 'test1234')`
+
 `const token = await authPlus.customLogin('WeChatOpenId')`
+
 `const token = await authPlus.authenticate(currentToken.accessToken)`
+
 `const token = await authPlus.refreshToken('refreshToken')`
+
 `const result = await authPlus.logout(currentToken.accessToken)`
+
 `const result = await authPlus.forceLogout('ole3022')`
 
 
