@@ -1,0 +1,60 @@
+{
+  "User": [
+    {
+      "salt": "Phve4usffrqqW26",
+      "hashedPassword": "f5bb1f45f70ce9c233076aed5773a0ff96774182a8d1b0f638f6e545a0243152",
+      "mobile": "18302100000",
+      "email": "ole3021@gmail.com",
+      "username": "ole3021",
+      "wechatOpenId": "WeChatOpenId"
+    },
+    {
+      "salt": "Phve4usffrqqW26",
+      "hashedPassword": "f5bb1f45f70ce9c233076aed5773a0ff96774182a8d1b0f638f6e545a0243152",
+      "mobile": "18302100001",
+      "email": "ole3022@gmail.com",
+      "username": "ole3022",
+      "wechatOpenId": "WeChatOpenId2"
+    }
+  ],
+  "AccessToken": [
+    {
+      "accessToken": "testToken",
+      "accessTokenExpiresAt": "2317-12-17 08:26:35.647Z",
+      "refreshToken": "refreshToken",
+      "refreshTokenExpiresAt": "2317-12-17 08:26:35.647Z",
+      "user": {
+        "salt": "Phve4usffrqqW26",
+        "hashedPassword": "f5bb1f45f70ce9c233076aed5773a0ff96774182a8d1b0f638f6e545a0243152",
+        "mobile": "18302100000",
+        "email": "ole3021@gmail.com",
+        "username": "ole3021",
+        "wechatOpenId": "WeChatOpenId"
+      }
+    },
+    {
+      "accessToken": "testToken",
+      "accessTokenExpiresAt": "2317-12-17 08:26:35.647Z",
+      "refreshToken": "refreshToken",
+      "refreshTokenExpiresAt": "2317-12-17 08:26:35.647Z",
+      "user": {
+        "salt": "Phve4usffrqqW26",
+        "hashedPassword": "f5bb1f45f70ce9c233076aed5773a0ff96774182a8d1b0f638f6e545a0243152",
+        "mobile": "18302100000",
+        "email": "ole3021@gmail.com",
+        "username": "ole3022",
+        "wechatOpenId": "WeChatOpenId"
+      }
+    }
+  ],
+  "Role": [
+    {
+      "user": "#User#username#ole3021",
+      "role": "Admin"
+    },
+    {
+      "user": "#User#username#ole3022",
+      "role": "User"
+    }
+  ]
+}

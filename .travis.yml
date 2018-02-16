@@ -1,0 +1,13 @@
+sudo: false
+language: node_js
+services: mongodb
+node_js:
+  - '8'
+install:
+  - npm i npminstall && npminstall
+before_script:
+  - sleep 5
+script:
+  - npm run test
+after_script:
+  - npminstall codecov && codecov
