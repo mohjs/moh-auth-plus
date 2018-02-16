@@ -1,6 +1,6 @@
 {
   "name": "moh-auth-plus",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "Aut easily with role fetch, oauth, customize.",
   "main": "lib/index.js",
   "scripts": {
